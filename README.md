@@ -18,12 +18,14 @@ Asegúrate de tener instalado [Python](https://www.python.org/downloads/) en tu 
    cd TesaNet
 
 2. **Crear un entorno virtual**
-    python -m venv .venv
-    source .venv/bin/activate  # En Linux/Mac
-    .venv\Scripts\activate     # En Windows
 
-3. **Instalar las dependencias**
+   python -m venv .venv
+   
+   source .venv/bin/activate  # En Linux/Mac
+   .venv\Scripts\activate     # En Windows
+
+4. **Instalar las dependencias**
     pip install -r requirements.txt
 
-4. **Ejecutar la aplicación**
+5. **Ejecutar la aplicación**
     python app.py
