@@ -14,7 +14,7 @@ Asegúrate de tener instalado [Python](https://www.python.org/downloads/) en tu 
 
 1. **Clonar el repositorio**:
    ```bash
-   git clone https://github.com/tu_usuario/TesaNet.git
+   git clone https://github.com/tgustavo513/TesaNet.git
    cd TesaNet
 
 2. **Crear un entorno virtual**
