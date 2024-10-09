@@ -1,0 +1,12 @@
+# Ignorar el entorno virtual
+.venv/
+
+# Ignorar archivos grandes
+*.h5
+*.dll
+*.pyd
+
+# Ignorar otros archivos temporales o no deseados
+__pycache__/
+*.pyc
+*.pyo

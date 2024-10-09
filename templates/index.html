@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TesaNet - Clasificador de Neumonías</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #206a8d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 48px;
+        }
+
+        .header p {
+            margin: 5px;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #206a8d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #14536a;
+        }
+
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .prediction {
+            font-size: 20px;
+            color: #206a8d;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TesaNet</h1>
+        <p>Identificador de neumonías virales y bacterianas</p>
+    </div>
+
+    <div class="container">
+        <h2>Subir una imagen para clasificación</h2>
+
+        <!-- Formulario para cargar la imagen -->
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*" required>
+            <br>
+            <!--<button type="submit">Seleccionar archivo</button>-->
+            <button type="submit">Cargar y clasificar</button>
+        </form>
+
+        {% if prediction %}
+            <div class="prediction">
+                Se sugiere que la imagen cargada es: {{ prediction }}
+            </div>
+            <img src="{{ image }}" alt="Imagen cargada" width="300px">
+        {% endif %}
+    </div>
+</body>
+</html>
