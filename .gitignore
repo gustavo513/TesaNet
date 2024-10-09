@@ -2,7 +2,7 @@
 .venv/
 
 # Ignorar archivos grandes
-*.h5
+#*.h5
 *.dll
 *.pyd
 
