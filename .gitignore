@@ -10,3 +10,6 @@
 __pycache__/
 *.pyc
 *.pyo
+
+# Ignorar el directorio de uploads dentro de static
+/static/uploads/
