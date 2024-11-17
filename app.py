@@ -1,8 +1,8 @@
 import os
+import time
 from flask import Flask, request, render_template, redirect, url_for
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import load_img
 import numpy as np
 import cv2 as cv
 import time
@@ -48,7 +48,13 @@ def predict_image(file_path):
     image = np.expand_dims(image, axis=-1)  # Añade la dimensión de canal
     image = np.expand_dims(image, axis=0)   # Añade la dimensión de batch
 
+    start_time = time.time()
     prediction = model.predict(image)
+    end_time = time.time()
+
+    # Tiempo de inferencia en segundos
+    inference_time = end_time - start_time
+    print(f"Tiempo de inferencia: {inference_time:.4f} segundos")
 
     return prediction
 
@@ -74,15 +80,17 @@ def upload_image():
     
     # Realizar predicción
     prediction = predict_image(file_path)
-    print(prediction)
+    print(f"Predicciones (probabilidades): {prediction}")
     
     # Interpretar la predicción
     class_labels = ['Normal', 'Neumonía Viral', 'Neumonía Bacteriana']  # Ajusta según tus clases
-    predicted_class = np.argmax(prediction, axis=1)
-    print('Resultado: ', predicted_class)
-    prediction_label = class_labels[predicted_class[0]]
-    print(prediction_label)
-
+    predicted_class = np.argmax(prediction, axis=1)[0]
+    confidence = prediction[0][predicted_class] * 100  # Obtener la confianza para la clase predicha
+    
+    # Crear una etiqueta con la clase predicha y el porcentaje
+    prediction_label = f"{class_labels[predicted_class]} ({confidence:.2f}%)"
+    print(f'Resultado: {prediction_label}')
+    
     # Asegurar que se cargue la imagen correcta añadiendo una marca de tiempo
     image_url = url_for('static', filename='uploads/' + file.filename) + "?t=" + str(int(time.time()))
     
@@ -104,5 +112,5 @@ print(cv.__version__)
 
 # Ejecutar la aplicación
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
 

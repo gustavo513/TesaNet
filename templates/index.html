@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TesaNet - Clasificador de Neumonías</title>
+    <title>TesaNet</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -97,10 +97,10 @@
         </form>
 
         {% if prediction %}
-            <div class="prediction">
-                Se sugiere que la imagen cargada es: {{ prediction }}
-            </div>
-            <img src="{{ image }}" alt="Imagen cargada" width="300px">
+        <div class="prediction">
+            Se sugiere que la imagen cargada es: {{ prediction }} <!-- Aquí se mostrará la predicción con el porcentaje -->
+        </div>
+        <img src="{{ image }}" alt="Imagen cargada" width="300px">
         {% endif %}
     </div>
 </body>
