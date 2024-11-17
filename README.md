@@ -13,17 +13,23 @@ Asegúrate de tener instalado [Python](https://www.python.org/downloads/) en tu 
 ## Instalación
 
 1. **Clonar el repositorio**:
+   
    ```bash
-   git clone https://github.com/tu_usuario/TesaNet.git
+   git clone https://github.com/gustavo513/TesaNet.git
    cd TesaNet
 
-2. **Crear un entorno virtual**
-    python -m venv .venv
-    source .venv/bin/activate  # En Linux/Mac
-    .venv\Scripts\activate     # En Windows
+3. **Crear un entorno virtual**
 
-3. **Instalar las dependencias**
+   python -m venv .venv
+   
+   source .venv/bin/activate  # En Linux/Mac
+   
+   .venv\Scripts\activate     # En Windows
+
+4. **Instalar las dependencias**
+   
     pip install -r requirements.txt
 
-4. **Ejecutar la aplicación**
+6. **Ejecutar la aplicación**
+   
     python app.py
