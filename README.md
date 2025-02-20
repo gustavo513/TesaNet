@@ -32,6 +32,12 @@ Asegúrate de tener instalado [Python](https://www.python.org/downloads/) en tu 
 
 5. **Crear la carpeta /TesaNet/static/uploads para guardar las imágenes cargadas**
 
-6. **Ejecutar la aplicación**
+    mkdir static
+
+    cd static
+
+    mkdir uploads
+   
+7. **Ejecutar la aplicación**
    
     python app.py
