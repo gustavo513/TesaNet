@@ -1,0 +1,9 @@
+{
+    "postgres": {
+        "host": "localhost",
+        "port": 5432,
+        "database": "tesanet",
+        "user": "postgres",
+        "password": "postgresql"
+    }
+}

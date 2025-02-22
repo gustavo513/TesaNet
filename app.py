@@ -1,19 +1,48 @@
 import os
 import time
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, flash
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 import numpy as np
 import cv2 as cv
 import time
+from werkzeug.security import generate_password_hash, check_password_hash
+from db import consultar, escribir
+from flask_login import LoginManager
+from flask_login import login_user
+from flask_login import UserMixin
+from flask_login import login_required, logout_user, current_user
 
 # Inicializar la app Flask
 app = Flask(__name__)
+
+#app.secret_key = os.urandom(24)
+app.secret_key = 'tesanet2024'
 
 # Cargar el modelo entrenado
 model = load_model('tesanet-model.keras')
 model.load_weights('tesanet-bif.weights.h5')
 print(model.summary())
+
+class User(UserMixin):
+    def __init__(self, id, correo, nombre_usuario):
+        self.id = id
+        self.correo = correo
+        self.nombre_usuario = nombre_usuario
+
+
+class Imagen():
+    def __init__(self, nombre_imagen, tipo_imagen, fecha, tipo_neumonia, probabilidad):
+        self.nombre_imagen = nombre_imagen
+        self.tipo_imagen = tipo_imagen
+        self.fecha = fecha
+        self.tipo_neumonia = tipo_neumonia
+        self.probabilidad = probabilidad
+
+
+login_manager = LoginManager()
+login_manager.login_view = 'iniciarSesion'
+login_manager.init_app(app)
 
 # Ruta a la carpeta de uploads
 UPLOAD_FOLDER = 'static/uploads/'
@@ -59,12 +88,104 @@ def predict_image(file_path):
     return prediction
 
 # Ruta de la página principal
-@app.route('/')
+@app.route('/cargar_imagen')
+@login_required
 def index():
     return render_template('index.html')
 
+
+@app.route('/registro')
+def registro():
+    return render_template('registro.html')
+
+
+@app.route('/registro', methods=['POST'])
+def registro_post():
+    nombre = request.form.get("nombre")
+    apellido = request.form.get("apellido")
+    correo = request.form.get("correo")
+    nombre_usuario = request.form.get("nombre_usuario")
+    password = request.form.get("contraseña")
+
+    usuario = consultar(
+        'SELECT nombre, apellido, correo, nombre_usuario, contraseña FROM public."Usuario" WHERE correo = %s;',
+        (correo,)
+    )
+
+    if usuario:
+        return redirect(url_for('iniciar_sesion')) 
+
+    hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
+
+    nuevo_usuario = escribir(
+        'INSERT INTO public."Usuario" (nombre, apellido, correo, nombre_usuario, contraseña) VALUES (%s, %s, %s, %s, %s);',
+        (nombre, apellido, correo, nombre_usuario, hashed_password)
+    )
+
+    return redirect(url_for('iniciar_sesion'))
+    
+
+@login_manager.user_loader
+def load_user(user_id):
+    usuario = consultar('SELECT id_usuario, correo, nombre_usuario FROM public."Usuario" WHERE id_usuario = %s;', (user_id,))
+    if usuario:
+        return User(id=usuario[0][0], correo=usuario[0][1], nombre_usuario=usuario[0][2])
+    return None
+
+
+@app.route('/iniciar_sesion')
+def iniciar_sesion():
+    return render_template('iniciarSesion.html')
+
+
+@app.route('/iniciar_sesion', methods=['POST'])
+def inic_ses_post():
+
+    correo = request.form.get("correo")
+    contraseña = request.form.get("contraseña")
+
+    usuario = consultar(
+        'SELECT id_usuario, correo, nombre_usuario, contraseña FROM public."Usuario" WHERE correo = %s OR nombre_usuario = %s;',
+        (correo, correo)
+    )
+
+    if not usuario or not check_password_hash(usuario[0][3], contraseña):
+        flash("Fallo al iniciar sesion. Verifique sus credenciales")
+        return redirect(url_for('iniciar_sesion'))
+    
+    usuario_obj = User(id=usuario[0][0], correo=usuario[0][1], nombre_usuario=usuario[0][2])
+    login_user(usuario_obj, remember=False)
+    #return render_template('index.html')
+    return redirect(url_for('index')) 
+
+
+@app.route('/perfil')
+@login_required
+def perfil():
+    return 'Perfil'
+
+
+@app.route('/historial')
+@login_required
+def historial():
+    imagenes = consultar(
+        'SELECT nombre_imagen, tipo_imagen, fecha_carga, tipo_neumonia, probabilidad FROM public."Imagen" WHERE id_usuario = %s;',
+        (current_user.id,)
+    )
+
+    return render_template('historial.html', imagenes=imagenes)
+
+
+@app.route('/cerrar_sesion')
+@login_required
+def cerrarSesion():
+    logout_user()
+    return redirect(url_for('iniciar_sesion'))
+
+
 # Ruta para cargar la imagen
-@app.route('/upload', methods=['POST'])
+@app.route('/resultado', methods=['POST'])
+@login_required
 def upload_image():
     if 'file' not in request.files:
         return redirect(request.url)
@@ -73,8 +194,19 @@ def upload_image():
     
     if file.filename == '' or not allowed_file(file.filename):
         return redirect(request.url)
+
+    id_imagen = consultar(
+        'SELECT COALESCE(MAX(id_imagen), 0) + 1 FROM public."Imagen";',
+        None
+    )
+
+    nombre_imagen = "imagen"+str(id_imagen[0][0])
+
+    tipo_imagen = file.filename.split(".")[1]
+
+    nombre_dir = nombre_imagen+"."+tipo_imagen
     
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], nombre_dir)
     file.save(file_path)  # Guardar la imagen en la carpeta 'uploads'
     print(f"Imagen guardada en: {file_path}")
     
@@ -92,7 +224,14 @@ def upload_image():
     print(f'Resultado: {prediction_label}')
     
     # Asegurar que se cargue la imagen correcta añadiendo una marca de tiempo
-    image_url = url_for('static', filename='uploads/' + file.filename) + "?t=" + str(int(time.time()))
+    image_url = url_for('static', filename='uploads/' + nombre_dir) + "?t=" + str(int(time.time()))
+
+    tipo_neumonia = {"Normal": "N", "Neumonía Viral": "V", "Neumonía Bacteriana": "B"}
+
+    escribir(
+        'INSERT INTO public."Imagen"(nombre_imagen, tipo_imagen, tipo_neumonia, probabilidad, id_usuario) VALUES (%s, %s, %s, %s, %s)',
+        (nombre_imagen, tipo_imagen, tipo_neumonia[class_labels[predicted_class]], confidence, current_user.id)
+    )
     
     # Renderizar el template con la predicción
     return render_template('index.html', prediction=prediction_label, image=image_url)

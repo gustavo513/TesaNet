@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TesaNet</title>
+    <link rel="stylesheet" href="../static/css/estilo.css">
+</head>
+<body>
+    <div class="header">
+        <h1>TesaNet</h1>
+        <p>Identificador de neumonías virales y bacterianas</p>
+    </div>
+
+    <div class="container_registro">
+        <h2>Registro de usuario</h2>
+
+        <!-- Formulario para registro de usuario -->
+        <form action="" onsubmit="return validarContraseña()" method="post">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" class="reg" name="nombre" required>
+
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" class="reg" name="apellido" required>
+
+            <label for="correo">Correo</label>
+            <input type="email" id="correo" class="reg" name="correo" required>
+
+            <label for="nombre_usuario">Nombre de Usuario</label>
+            <input type="text" id="nombre_usuario" class="reg" name="nombre_usuario" required>
+
+            <label for="Contraseña">Contraseña</label>
+            <input type="password" id="contraseña" class="reg" name="contraseña" required>
+
+            <label for="contraseña_doble">Repite la contraseña</label>
+            <input type="password" id="contraseña_doble" class="reg" name="contraseña_doble" required>
+
+            <button class="reset" type="reset">Restablecer</button>
+            <button class="btn" type="submit">Registrarse</button>
+        </form>
+    </div>
+</body>
+</html>
