@@ -14,27 +14,39 @@
         <p>Identificador de neumonías virales y bacterianas</p>
     </div>
 
+    {% with mensaje = get_flashed_messages() %}
+
+    {% if mensaje %}
+
+        <div id="mensaje_error_registro">
+            {{ mensaje[0] }}. Ir a <a href="{{url_for('iniciar_sesion')}}"> Inicio de Sesion</a>.
+        </div>
+
+    {% endif %}
+
+    {% endwith %}
+
     <div class="container_registro">
         <h2>Registro de usuario</h2>
 
         <!-- Formulario para registro de usuario -->
         <form action="" onsubmit="return validarContraseña()" method="post">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" class="reg" name="nombre" required>
+            <input type="text" id="nombre" class="reg" name="nombre" value="{{nombre or ''}}" required>
 
             <label for="apellido">Apellido</label>
-            <input type="text" id="apellido" class="reg" name="apellido" required>
+            <input type="text" id="apellido" class="reg" name="apellido" value="{{apellido or ''}}" required>
 
             <label for="correo">Correo</label>
-            <input type="email" id="correo" class="reg" name="correo" required>
+            <input type="email" id="correo" class="reg" name="correo" value="{{correo or ''}}" required>
 
             <label for="nombre_usuario">Nombre de Usuario</label>
-            <input type="text" id="nombre_usuario" class="reg" name="nombre_usuario" required>
+            <input type="text" id="nombre_usuario" class="reg" name="nombre_usuario" value="{{nombre_usuario or ''}}" required>
 
             <label for="Contraseña">Contraseña</label>
             <input type="password" id="contraseña" class="reg" name="contraseña" required>
 
-            <label for="contraseña_doble">Repite la contraseña</label>
+            <label for="contraseña_doble">Repita la contraseña</label>
             <input type="password" id="contraseña_doble" class="reg" name="contraseña_doble" onkeyup="validarContraseña()" required>
 
             <div id="mensaje"></div>

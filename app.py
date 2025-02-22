@@ -111,7 +111,7 @@ def iniciar_sesion():
     return render_template('iniciarSesion.html')
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def inic_ses_post():
 
     correo = request.form.get("correo")
@@ -123,8 +123,8 @@ def inic_ses_post():
     )
 
     if not usuario or not check_password_hash(usuario[0][3], contraseña):
-        flash("Fallo al iniciar sesion. Verifique sus credenciales")
-        return redirect(url_for('iniciar_sesion'))
+        flash("Fallo al iniciar sesión. Verifique sus credenciales e intente otra vez.")
+        return render_template('iniciarSesion.html', error=1)
     
     usuario_obj = User(
                     id=usuario[0][0], 
@@ -135,7 +135,6 @@ def inic_ses_post():
                     fecha_creacion=None
                 )
     login_user(usuario_obj, remember=False)
-    #return render_template('index.html')
     return redirect(url_for('cargar_imagen')) 
 
 
@@ -152,6 +151,7 @@ def registro():
 
 @app.route('/registro', methods=['POST'])
 def registro_post():
+
     nombre = request.form.get("nombre")
     apellido = request.form.get("apellido")
     correo = request.form.get("correo")
@@ -164,7 +164,8 @@ def registro_post():
     )
 
     if usuario:
-        return redirect(url_for('iniciar_sesion')) 
+        flash('Esta cuenta ya está en uso')
+        return render_template('registro.html', nombre=nombre, apellido=apellido, correo=correo, nombre_usuario=nombre_usuario)
 
     hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
 
@@ -173,6 +174,7 @@ def registro_post():
         (nombre, apellido, correo, nombre_usuario, hashed_password)
     )
 
+    flash('Registro exitoso. Ahora puede iniciar sesión.')
     return redirect(url_for('iniciar_sesion'))    
 
 
@@ -225,6 +227,7 @@ def eliminar_perfil():
     )
 
     logout_user()
+    flash('Su cuenta ha sido eliminada exitosamente')
     return redirect(url_for('iniciar_sesion'))
 
 

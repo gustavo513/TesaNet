@@ -276,3 +276,33 @@ img {
     height: auto;
     border-radius: 5px;
 }
+
+#mensaje_error_registro {
+    display: flex;
+    background-color: red;
+    align-items: center;
+    justify-content: center;
+    max-width: 400px;
+    height: 25px;
+    font-size: 16px;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+    text-align: center;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+#mensaje_exitoso {
+    justify-content: center;
+    align-items: center;
+    background-color: green;
+    color: white;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 400px;
+    padding: 15px;
+    margin: 20px auto;
+}
