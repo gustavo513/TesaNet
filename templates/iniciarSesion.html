@@ -13,6 +13,20 @@
         <p>Identificador de neumonías virales y bacterianas</p>
     </div>
 
+    {% with mensaje = get_flashed_messages() %}
+    {% if mensaje %}
+        {% if not error %}
+            <div id="mensaje_exitoso">
+                {{ mensaje[0] }}
+            </div>
+        {% elif error == 1 %}
+            <div id="mensaje_error_registro">
+                {{ mensaje[0] }}
+            </div>
+        {% endif %}
+    {% endif %}
+    {% endwith %}
+
     <div class="container_sesion">
         <h2>Inicio de sesión</h2>
 

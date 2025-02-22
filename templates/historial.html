@@ -34,7 +34,7 @@
         <h2>Historial</h2>
         <div id="imagenes">
         {% if imagenes %}
-                {% set etiqueta = {'N': 'Normal', 'V': 'Neumonia Viral', 'B': 'Neumonia Bacteriana'} %}
+                {% set etiqueta = {'N': 'Normal', 'V': 'Neumonía Viral', 'B': 'Neumonía Bacteriana'} %}
                 {% for item in imagenes %}
                     <div class="item">
                         <img src="{{ url_for('static', filename='uploads/' + item[0] + '.' + item[1]) }}" width="300px" height="300px" alt="Imagen del historial">
