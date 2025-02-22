@@ -24,7 +24,7 @@
             </button>      
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li><a class="dropdown-item" href="/cargar_imagen">Inicio</a></li>
-                <li><a class="dropdown-item" href="#">Perfil</a></li>
+                <li><a class="dropdown-item" href="/perfil">Perfil</a></li>
                 <li><a class="dropdown-item" href="/historial">Historial</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="/cerrar_sesion">Cerrar sesión</a></li>
@@ -32,26 +32,44 @@
         </div>
     </nav>
     
-    {% if current_user.is_authenticated %}
-    <section class="container_imagen">
-        <h2>Subir una imagen para clasificación</h2>
+    <section class="container_perfil">
+        <h2>¡Bienvenido, {{ usuario.nombre }}!</h2>
 
-        <!-- Formulario para cargar la imagen -->
-        <form action="/resultado" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept="image/*" required>
-            <br>
-            <!--<button type="submit">Seleccionar archivo</button>-->
-            <button class="btn" id="carga_imagen" type="submit">Cargar y clasificar</button>
+        <h3>Perfil</h3>
+
+        <form action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="{{ usuario.id }}"/>
+            
+            <label for="nombre">Nombre</label><br>
+            <input type="text" class="reg" name="nombre" value="{{ usuario.nombre }}" required/><br>
+
+            <label for="apellido">Apellido</label><br>
+            <input type="text" class="reg" name="apellido" value="{{ usuario.apellido }}" required/><br>
+
+            <label for="correo">Correo</label><br>
+            <input type="email" class="reg" name="correo" value="{{ usuario.correo }}" required/><br>
+
+            <label for="nombre_usuario">Nombre de usuario</label><br>
+            <input type="text" class="reg" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" required/><br>
+
+            <label for="fecha_creacion" name="fecha_creacion">Fecha de creación</label><br>
+            <input type="text" class="fecha_creacion" name="fecha_creacion" value="{{ usuario.fecha_creacion }}" disabled/><br>
+
+            <div id="btn_perfil">
+                <a id="eliminar_cuenta" href="/eliminar">Eliminar Cuenta</a>
+                <a id="cancelar" href="/cargar_imagen">Cancelar</a>
+                <button id="guardar_perfil" type="submit">Guardar</button>
+            </div>
         </form>
 
         {% if prediction %}
         <div class="prediction">
-            Se sugiere que la imagen cargada es: {{ prediction }} <!-- Aquí se mostrará la predicción con el porcentaje -->
+            Se sugiere que la imagen cargada es: {{ prediction }} 
         </div>
         <img src="{{ image }}" alt="Imagen cargada" width="300px">
         {% endif %}
     </section>
-    {% endif %}
+
 </body>
 
 </html>

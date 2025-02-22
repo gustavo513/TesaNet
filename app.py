@@ -25,11 +25,14 @@ model.load_weights('tesanet-bif.weights.h5')
 print(model.summary())
 
 class User(UserMixin):
-    def __init__(self, id, correo, nombre_usuario):
+    def __init__(self, id, correo, nombre_usuario, nombre, apellido, fecha_creacion):
         self.id = id
         self.correo = correo
         self.nombre_usuario = nombre_usuario
-
+        self.nombre = nombre
+        self.apellido = apellido
+        self.fecha_creacion = fecha_creacion
+        
 
 class Imagen():
     def __init__(self, nombre_imagen, tipo_imagen, fecha, tipo_neumonia, probabilidad):
@@ -87,11 +90,59 @@ def predict_image(file_path):
 
     return prediction
 
-# Ruta de la página principal
+
+@login_manager.user_loader
+def load_user(user_id):
+    usuario = consultar('SELECT id_usuario, correo, nombre_usuario, nombre, apellido, fecha_creacion FROM public."Usuario" WHERE id_usuario = %s;', (user_id,))
+    if usuario:
+        return User(
+                    id=usuario[0][0], 
+                    correo=usuario[0][1], 
+                    nombre_usuario=usuario[0][2],
+                    nombre=usuario[0][3],
+                    apellido=usuario[0][4],
+                    fecha_creacion=usuario[0]
+                )
+    return None
+
+
+@app.route('/')
+def iniciar_sesion():
+    return render_template('iniciarSesion.html')
+
+
+@app.route('/', methods=['POST'])
+def inic_ses_post():
+
+    correo = request.form.get("correo")
+    contraseña = request.form.get("contraseña")
+
+    usuario = consultar(
+        'SELECT id_usuario, correo, nombre_usuario, contraseña FROM public."Usuario" WHERE correo = %s OR nombre_usuario = %s;',
+        (correo, correo)
+    )
+
+    if not usuario or not check_password_hash(usuario[0][3], contraseña):
+        flash("Fallo al iniciar sesion. Verifique sus credenciales")
+        return redirect(url_for('iniciar_sesion'))
+    
+    usuario_obj = User(
+                    id=usuario[0][0], 
+                    correo=usuario[0][1], 
+                    nombre_usuario=usuario[0][2],
+                    nombre=None,
+                    apellido=None,
+                    fecha_creacion=None
+                )
+    login_user(usuario_obj, remember=False)
+    #return render_template('index.html')
+    return redirect(url_for('cargar_imagen')) 
+
+
 @app.route('/cargar_imagen')
 @login_required
-def index():
-    return render_template('index.html')
+def cargar_imagen():
+    return render_template('cargarImagen.html')
 
 
 @app.route('/registro')
@@ -122,54 +173,66 @@ def registro_post():
         (nombre, apellido, correo, nombre_usuario, hashed_password)
     )
 
-    return redirect(url_for('iniciar_sesion'))
-    
-
-@login_manager.user_loader
-def load_user(user_id):
-    usuario = consultar('SELECT id_usuario, correo, nombre_usuario FROM public."Usuario" WHERE id_usuario = %s;', (user_id,))
-    if usuario:
-        return User(id=usuario[0][0], correo=usuario[0][1], nombre_usuario=usuario[0][2])
-    return None
-
-
-@app.route('/iniciar_sesion')
-def iniciar_sesion():
-    return render_template('iniciarSesion.html')
-
-
-@app.route('/iniciar_sesion', methods=['POST'])
-def inic_ses_post():
-
-    correo = request.form.get("correo")
-    contraseña = request.form.get("contraseña")
-
-    usuario = consultar(
-        'SELECT id_usuario, correo, nombre_usuario, contraseña FROM public."Usuario" WHERE correo = %s OR nombre_usuario = %s;',
-        (correo, correo)
-    )
-
-    if not usuario or not check_password_hash(usuario[0][3], contraseña):
-        flash("Fallo al iniciar sesion. Verifique sus credenciales")
-        return redirect(url_for('iniciar_sesion'))
-    
-    usuario_obj = User(id=usuario[0][0], correo=usuario[0][1], nombre_usuario=usuario[0][2])
-    login_user(usuario_obj, remember=False)
-    #return render_template('index.html')
-    return redirect(url_for('index')) 
+    return redirect(url_for('iniciar_sesion'))    
 
 
 @app.route('/perfil')
 @login_required
 def perfil():
-    return 'Perfil'
+    
+    usuario = consultar(
+        'SELECT id_usuario, correo, nombre_usuario, nombre, apellido, fecha_creacion FROM public."Usuario" WHERE id_usuario = %s;', 
+        (current_user.id,)
+    )
+
+    usuario_obj = User(
+                    id=usuario[0][0], 
+                    correo=usuario[0][1], 
+                    nombre_usuario=usuario[0][2],
+                    nombre=usuario[0][3],
+                    apellido=usuario[0][4],
+                    fecha_creacion=usuario[0][5]
+    )
+
+    return render_template('perfil.html', usuario=usuario_obj)
+
+
+@app.route('/perfil', methods=['POST'])
+@login_required
+def guardar_perfil():
+
+    id = request.form.get('id')
+    nombre = request.form.get('nombre')
+    apellido = request.form.get('apellido')
+    correo = request.form.get('correo')
+    nombre_usuario = request.form.get('nombre_usuario')
+
+    escribir(
+        'UPDATE public."Usuario" SET nombre = %s, apellido = %s, correo = %s, nombre_usuario = %s WHERE id_usuario = %s',
+        (nombre, apellido, correo, nombre_usuario, id)
+    )
+
+    return redirect(url_for('cargar_imagen'))
+
+
+@app.route('/eliminar')
+@login_required
+def eliminar_perfil():
+
+    escribir(
+        'UPDATE public."Usuario" SET correo = NULL, nombre_usuario = NULL, contraseña = NULL, nombre = NULL, apellido = NULL, estado = 0 WHERE id_usuario = %s;',
+        (current_user.id,)
+    )
+
+    logout_user()
+    return redirect(url_for('iniciar_sesion'))
 
 
 @app.route('/historial')
 @login_required
 def historial():
     imagenes = consultar(
-        'SELECT nombre_imagen, tipo_imagen, fecha_carga, tipo_neumonia, probabilidad FROM public."Imagen" WHERE id_usuario = %s;',
+        'SELECT nombre_imagen, tipo_imagen, fecha_carga, tipo_neumonia, probabilidad FROM public."Imagen" WHERE id_usuario = %s ORDER BY id_imagen DESC;',
         (current_user.id,)
     )
 
@@ -234,7 +297,7 @@ def upload_image():
     )
     
     # Renderizar el template con la predicción
-    return render_template('index.html', prediction=prediction_label, image=image_url)
+    return render_template('cargarImagen.html', prediction=prediction_label, image=image_url)
 
 # Deshabilitar el caché en todas las respuestas
 @app.after_request

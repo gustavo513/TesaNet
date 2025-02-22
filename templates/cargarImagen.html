@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TesaNet</title>
     <link rel="stylesheet" href="../static/css/estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" defer></script>
+    <title>TesaNet</title>
 </head>
+
 <body>
+
     <header class="header">
         <h1>TesaNet</h1>
         <p>Identificador de neumonías virales y bacterianas</p>
@@ -29,26 +31,26 @@
             </ul>
         </div>
     </nav>
+    
+    <section class="container_imagen">
+        <h2>Subir una imagen para clasificación</h2>
 
-    <section class="container_historial">
-        <h2>Historial</h2>
-        <div id="imagenes">
-        {% if imagenes %}
-                {% set etiqueta = {'N': 'Normal', 'V': 'Neumonia Viral', 'B': 'Neumonia Bacteriana'} %}
-                {% for item in imagenes %}
-                    <div class="item">
-                        <img src="{{ url_for('static', filename='uploads/' + item[0] + '.' + item[1]) }}" width="300px" height="300px" alt="Imagen del historial">
-                        <p>Fecha: {{ item[2] }}</p>
-                        <p>Tipo: {{ etiqueta[item[3]] }}</p>
-                        <p>Probabilidad: {{ (item[4]) | round(2) }}%</p>
-                    </div>
-                {% endfor %}
-        {% else %}
-            <div class="mensaje-vacio">
-                <p>No hay imágenes en el historial todavía. Cuando cargue imágenes aparecerán aquí.</p>
-            </div>
-        {% endif %}
+        <!-- Formulario para cargar la imagen -->
+        <form action="/resultado" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*" required>
+            <br>
+            <!--<button type="submit">Seleccionar archivo</button>-->
+            <button class="btn" id="carga_imagen" type="submit">Cargar y clasificar</button>
+        </form>
+
+        {% if prediction %}
+        <div class="prediction">
+            Se sugiere que la imagen cargada es: {{ prediction }} <!-- Aquí se mostrará la predicción con el porcentaje -->
         </div>
+        <img src="{{ image }}" alt="Imagen cargada" width="300px">
+        {% endif %}
     </section>
+
 </body>
+
 </html>
