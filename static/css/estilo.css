@@ -306,3 +306,7 @@ img {
     padding: 15px;
     margin: 20px auto;
 }
+
+#fecha_creacion {
+    border: solid white;
+}

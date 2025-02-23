@@ -111,7 +111,7 @@ def iniciar_sesion():
     return render_template('iniciarSesion.html')
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/', methods=['POST'])
 def inic_ses_post():
 
     correo = request.form.get("correo")
