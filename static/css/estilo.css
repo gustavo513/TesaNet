@@ -310,3 +310,36 @@ img {
 #fecha_creacion {
     border: solid white;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item img:hover {
+    transform: scale(1.2)
+}
+
+#imgModal {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+}
+
+.cerrar {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    font-size: 30px;
+    color: white;
+    cursor: pointer;
+}

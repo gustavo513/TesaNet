@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TesaNet</title>
+    <script src="../static/js/modal.js"></script>
     <link rel="stylesheet" href="../static/css/estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" defer></script>
@@ -37,7 +38,7 @@
                 {% set etiqueta = {'N': 'Normal', 'V': 'Neumonía Viral', 'B': 'Neumonía Bacteriana'} %}
                 {% for item in imagenes %}
                     <div class="item">
-                        <img src="{{ url_for('static', filename='uploads/' + item[0] + '.' + item[1]) }}" width="300px" height="300px" alt="Imagen del historial">
+                        <img src="{{ url_for('static', filename='uploads/' + item[0] + '.' + item[1]) }}" width="300px" height="300px" alt="Imagen del historial" onclick="abrirModal(this)">
                         <p>Fecha: {{ item[2] }}</p>
                         <p>Tipo: {{ etiqueta[item[3]] }}</p>
                         <p>Probabilidad: {{ (item[4]) | round(2) }}%</p>
@@ -50,5 +51,11 @@
         {% endif %}
         </div>
     </section>
+
+    <div id="modal" class="modal">
+        <span class="cerrar" onclick="cerrarModal()">&times;</span>
+        <img id="imgModal" alt="Imagen del modal">
+    </div>
+
 </body>
 </html>
