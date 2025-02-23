@@ -32,11 +32,13 @@ Asegúrate de tener instalado [Python](https://www.python.org/downloads/) en tu 
 
 5. **Crear la carpeta /TesaNet/static/uploads para guardar las imágenes cargadas**
 
-    mkdir static
-
     cd static
 
     mkdir uploads
+
+6. **Importar el archivo tesanet_bd.sql desde PostgreSQL para crear la base de datos**
+
+   Directorio: ../tesanet/tesanet_bd.sql
    
 7. **Ejecutar la aplicación**
    
