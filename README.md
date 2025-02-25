@@ -26,6 +26,8 @@ Asegúrate de tener instalado [Python](https://www.python.org/downloads/) en tu 
    
    .venv\Scripts\activate     # En Windows
 
+   [El entorno virtual debe activarse siempre antes de ejecutar el proyecto o después de reabrir el editor de código, ya sea en Linux o Windows]
+
 4. **Instalar las dependencias**
    
     pip install -r requirements.txt
