@@ -26,17 +26,21 @@ Asegúrate de tener instalado [Python](https://www.python.org/downloads/) en tu 
    
    .venv\Scripts\activate     # En Windows
 
+   [El entorno virtual debe activarse siempre antes de ejecutar el proyecto o después de reabrir el editor de código, ya sea en Linux o Windows]
+
 4. **Instalar las dependencias**
    
     pip install -r requirements.txt
 
 5. **Crear la carpeta /TesaNet/static/uploads para guardar las imágenes cargadas**
 
-    mkdir static
-
     cd static
 
     mkdir uploads
+
+6. **Importar el archivo tesanet_bd.sql desde PostgreSQL para crear la base de datos**
+
+   Directorio: ../tesanet/tesanet_bd.sql
    
 7. **Ejecutar la aplicación**
    
