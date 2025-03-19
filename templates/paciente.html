@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TesaNet</title>
+    <script src="../static/js/modal.js"></script>
+    <link rel="stylesheet" href="../static/css/estilo.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <h1>TesaNet</h1>
+        <p>Identificador de neumonías virales y bacterianas</p>
+    </header>
+
+    <nav class="navbar navbar-dark px-3" style="background-color: #206a8d;">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>      
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/cargar_imagen">Inicio</a></li>
+                <li><a class="dropdown-item" href="/perfil">Perfil</a></li>
+                <li><a class="dropdown-item" href="/paciente">Pacientes</a></li>
+                <li><a class="dropdown-item" href="/historial">Historial</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/cerrar_sesion">Cerrar sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="container_historial">
+        <h2>Pacientes</h2><br>
+        <a href="/cargar_paciente" id="btn_crear_paciente">Registrar paciente</a><br>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                {% for category, mensaje in mensajes %}
+                    {% if category == 'error' %}
+                        <div id="mensaje_error_registro">
+                            {{ mensaje }}
+                        </div>
+                    {% else %}
+                        <div id="mensaje_exitoso">
+                            {{ mensaje }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div id="pacientes">
+            {% if pacientes %}
+                <table id="tabla_pacientes">
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Fecha Nacimiento</th>
+                        <th>Sexo</th>
+                        <th>Correo</th>
+                        <th>Fecha de creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                    {% for paciente in pacientes %}
+                        <tr>
+                            <td>{{ paciente[1] }}</td>
+                            <td>{{ paciente[2] }}</td>
+                            <td>{{ paciente[3] }}</td>
+                            <td>{{ paciente[4] }}</td>
+                            <td>{{ paciente[5] }}</td>
+                            <td>{{ paciente[6] }}</td>
+                            <td>{{ paciente[7] }}</td>
+                            <td>
+                                <a id="guardar_perfil" href="/actualizar_paciente?id_paciente={{ paciente[0] }}">Actualizar</a>
+                                <a id="eliminar_cuenta" href="/eliminar_paciente?id_paciente={{ paciente[0] }}">Eliminar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <div class="mensaje-vacio">
+                    <p>No hay registros de pacientes todavía. Cuando cargue datos de pacientes aparecerán aquí.</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+</body>
+</html>

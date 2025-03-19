@@ -32,15 +32,16 @@ class User(UserMixin):
         self.nombre = nombre
         self.apellido = apellido
         self.fecha_creacion = fecha_creacion
-        
 
-class Imagen():
-    def __init__(self, nombre_imagen, tipo_imagen, fecha, tipo_neumonia, probabilidad):
-        self.nombre_imagen = nombre_imagen
-        self.tipo_imagen = tipo_imagen
-        self.fecha = fecha
-        self.tipo_neumonia = tipo_neumonia
-        self.probabilidad = probabilidad
+class Paciente:
+    def __init__(self, id_paciente, documento, nombre, apellido, fecha_nac, sexo, correo):
+        self.id_paciente = id_paciente
+        self.documento = documento
+        self.nombre = nombre
+        self.apellido = apellido
+        self.fecha_nac = fecha_nac
+        self.sexo = sexo
+        self.correo = correo
 
 
 login_manager = LoginManager()
@@ -141,7 +142,13 @@ def inic_ses_post():
 @app.route('/cargar_imagen')
 @login_required
 def cargar_imagen():
-    return render_template('cargarImagen.html')
+
+    pacientes = consultar(
+        'SELECT id_paciente, documento, nombre, apellido, fecha_nac, sexo, correo, fecha_creacion, id_usuario FROM public."Paciente" WHERE id_usuario = %s AND estado = 1;',
+        (current_user.id,)
+    )   
+
+    return render_template('cargarImagen.html', pacientes=pacientes)
 
 
 @app.route('/registro')
@@ -231,11 +238,139 @@ def eliminar_perfil():
     return redirect(url_for('iniciar_sesion'))
 
 
+@app.route('/paciente')
+@login_required
+def paciente():
+    pacientes = consultar(
+        'SELECT id_paciente, documento, nombre, apellido, fecha_nac, sexo, correo, fecha_creacion, id_usuario FROM public."Paciente" WHERE id_usuario = %s AND estado = 1;',
+        (current_user.id,)
+    )    
+    return render_template('paciente.html', pacientes=pacientes)
+
+
+@app.route('/cargar_paciente')
+@login_required
+def cargar_paciente():
+    return render_template('pacienteForm.html', paciente=None)
+
+
+@app.route('/buscar_paciente')
+@login_required
+def buscar_paciente():
+    documento = None
+    nombre = None
+    apellido = None
+    pacientes = consultar(
+        'SELECT id_paciente, documento, nombre, apellido FROM public."Paciente" WHERE id_usuario = %s AND documento = %s OR nombre = %s OR apellido = %s;',
+        (current_user.id, documento, nombre, apellido,)
+    )
+
+    return pacientes
+
+
+@app.route('/cargar_paciente', methods=['POST'])
+@login_required
+def cargar_paciente_post():
+    
+    id_paciente = request.form.get("id_paciente")
+    documento = request.form.get("documento")
+    nombre = request.form.get("nombre")
+    apellido = request.form.get("apellido")
+    fecha_nacimiento = request.form.get("fecha_nacimiento")
+    sexo = request.form.get("sexo")
+    correo = request.form.get("correo")
+
+    escribir(
+        'INSERT INTO public."Paciente"(documento, nombre, apellido, fecha_nac, sexo, correo, id_usuario) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+        (documento, nombre, apellido, fecha_nacimiento, sexo, correo, current_user.id,)
+    )
+
+    flash('Paciente registrado correctamente')
+    return redirect(url_for('paciente'))
+
+
+@app.route('/actualizar_paciente', methods=['GET'])
+@login_required
+def actualizar_paciente():
+
+    id_paciente = request.args.get('id_paciente')
+
+    resultado = consultar(
+        'SELECT id_paciente, documento, nombre, apellido, fecha_nac, sexo, correo FROM public."Paciente" WHERE id_paciente = %s;',
+        (id_paciente,)
+    )
+
+    if resultado:
+        paciente_obj = Paciente(
+            id_paciente=resultado[0][0],
+            documento=resultado[0][1],
+            nombre=resultado[0][2],
+            apellido=resultado[0][3],
+            fecha_nac=resultado[0][4],
+            sexo=resultado[0][5],
+            correo=resultado[0][6]
+        )
+    else:
+        return None
+
+    return render_template('pacienteForm.html', paciente=paciente_obj)
+
+
+@app.route('/actualizar_paciente', methods=['POST'])
+@login_required
+def guardar_paciente():
+
+    id_paciente = request.form.get('id_paciente')
+    documento = request.form.get('documento')
+    nombre = request.form.get('nombre')
+    apellido = request.form.get('apellido')
+    fecha_nacimiento = request.form.get('fecha_nacimiento')
+    sexo = request.form.get('sexo')
+    correo = request.form.get('correo')
+
+    resultado = escribir(    
+        'UPDATE public."Paciente" SET documento = %s, nombre = %s, apellido = %s, fecha_nac = %s, sexo = %s, correo = %s WHERE id_paciente = %s;',
+        (documento, nombre, apellido, fecha_nacimiento, sexo, correo, id_paciente,)
+    )
+
+    print(resultado)
+    if resultado == 1:
+        flash('Registro de paciente actualizado correctamente.', 'exito')
+    else:
+        flash('No se ha podido actualizar el registro.', 'error')
+
+    return redirect(url_for('paciente'))
+
+
+@app.route('/eliminar_paciente')
+@login_required
+def eliminar_paciente():
+    id_paciente = request.args.get('id_paciente')
+
+    if id_paciente:
+        resultado = escribir(
+            'UPDATE public."Paciente" SET estado = 0 WHERE id_paciente = %s AND estado = 1;',
+            (id_paciente,)
+        )
+        if resultado == 0:
+            flash('No se ha podido eliminar el registro o no existe.', 'error')
+            return redirect(url_for('paciente'))
+        else:
+            flash('Registro de paciente eliminado correctamente.', 'exito')
+    else:
+        flash('No se ha podido eliminar el registro o no existe.', 'error')
+        return redirect(url_for('paciente'))
+
+    return redirect(url_for('paciente'))
+
+
+
 @app.route('/historial')
 @login_required
 def historial():
+
     imagenes = consultar(
-        'SELECT nombre_imagen, tipo_imagen, fecha_carga, tipo_neumonia, probabilidad FROM public."Imagen" WHERE id_usuario = %s ORDER BY id_imagen DESC;',
+        'SELECT nombre_imagen, tipo_imagen, fecha_carga, tipo_neumonia, probabilidad, PA.documento, PA.nombre, PA.apellido FROM public."Imagen" I JOIN public."Paciente" PA ON I.id_paciente = PA.id_paciente JOIN public."Usuario" U ON PA.id_usuario = U.id_usuario WHERE U.id_usuario = %s AND PA.estado = 1 ORDER BY id_imagen DESC;',
         (current_user.id,)
     )
 
@@ -266,6 +401,19 @@ def upload_image():
         None
     )
 
+    paciente = str(request.form.get("entrada_paciente"))
+
+    id_paciente = int(paciente.split('-')[0])
+
+    resultado = consultar(
+        'SELECT id_paciente FROM public."Paciente" WHERE id_paciente = %s AND estado = 1 AND id_usuario = %s;',
+        (id_paciente, current_user.id,)
+    )
+
+    if resultado is None:
+        flash('El usuario no se encuentra registrado en la base de datos.', 'error')
+        return redirect(url_for('cargar_imagen'))
+
     nombre_imagen = "imagen"+str(id_imagen[0][0])
 
     tipo_imagen = file.filename.split(".")[1]
@@ -295,8 +443,8 @@ def upload_image():
     tipo_neumonia = {"Normal": "N", "Neumonía Viral": "V", "Neumonía Bacteriana": "B"}
 
     escribir(
-        'INSERT INTO public."Imagen"(nombre_imagen, tipo_imagen, tipo_neumonia, probabilidad, id_usuario) VALUES (%s, %s, %s, %s, %s)',
-        (nombre_imagen, tipo_imagen, tipo_neumonia[class_labels[predicted_class]], confidence, current_user.id)
+        'INSERT INTO public."Imagen"(nombre_imagen, tipo_imagen, tipo_neumonia, probabilidad, id_paciente) VALUES (%s, %s, %s, %s, %s)',
+        (nombre_imagen, tipo_imagen, tipo_neumonia[class_labels[predicted_class]], confidence, id_paciente)
     )
     
     # Renderizar el template con la predicción

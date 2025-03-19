@@ -24,6 +24,7 @@
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li><a class="dropdown-item" href="/cargar_imagen">Inicio</a></li>
                 <li><a class="dropdown-item" href="/perfil">Perfil</a></li>
+                <li><a class="dropdown-item" href="/paciente">Pacientes</a></li>
                 <li><a class="dropdown-item" href="/historial">Historial</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="/cerrar_sesion">Cerrar sesión</a></li>
@@ -39,9 +40,11 @@
                 {% for item in imagenes %}
                     <div class="item">
                         <img src="{{ url_for('static', filename='uploads/' + item[0] + '.' + item[1]) }}" width="300px" height="300px" alt="Imagen del historial" onclick="abrirModal(this)">
-                        <p>Fecha: {{ item[2] }}</p>
-                        <p>Tipo: {{ etiqueta[item[3]] }}</p>
-                        <p>Probabilidad: {{ (item[4]) | round(2) }}%</p>
+                        <p><b>Doc. Paciente:</b> {{ item[5] }}</p>
+                        <p><b>Nombre Paciente:</b> {{ item[6] + ' ' + item[7] }}</p>
+                        <p><b>Fecha:</b> {{ item[2] }}</p>
+                        <p><b>Tipo:</b> {{ etiqueta[item[3]] }}</p>
+                        <p><b>Probabilidad:</b> {{ (item[4]) | round(2) }}%</p>
                     </div>
                 {% endfor %}
         {% else %}

@@ -5,6 +5,10 @@ body {
     padding: 0;
 }
 
+a{
+    text-decoration: none !important;
+}
+
 .header {
     background-color: #206a8d;
     color: white;
@@ -67,6 +71,16 @@ body {
     text-align: left; 
 }
 
+.container_paciente {
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
 .container_perfil h1, .container_perfil h2 {
     text-align: center; 
 }
@@ -92,6 +106,17 @@ body {
     justify-content: center;
 }
 
+#pacientes {
+    overflow-x: auto; 
+    white-space: nowrap; 
+    max-width: 90%;
+    margin: 25px auto;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
 .mensaje-vacio {
     grid-column: 1 / -1; 
     text-align: center;
@@ -101,6 +126,7 @@ body {
 h2 {
     color: #333;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 input[type="file"] {
@@ -130,6 +156,24 @@ label {
     margin-left: 10px;
 }
 
+.container_paciente label {
+    display: block;
+    text-align: left;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.container_paciente select {
+    padding: 10px;
+    margin-top: 5px;
+    margin-left: 0;
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;   
+}
+
 .auth {
     width: 90%;
     padding: 10px;
@@ -144,7 +188,7 @@ label {
     outline: none;
 }
 
-.btn, #carga_imagen {
+.btn, #carga_imagen, #carga_paciente {
     padding: 10px 20px;
     background-color: #206a8d;
     color: white;
@@ -170,6 +214,7 @@ label {
     margin-top: 20px;
     font-size: 12px;
     width: 24%;
+    text-decoration: none;
 }
 
 #guardar_perfil:hover {
@@ -206,7 +251,7 @@ label {
 
 }
 
-#btn_perfil{
+#btn_perfil, #btn_carga_pacient{
     display: flex;
     justify-content: space-between; 
     align-items: center;
@@ -222,6 +267,20 @@ label {
     font-size: 16px;
     margin-top: 15px;
     width: 42%;
+}
+
+#btn_crear_paciente {
+    padding: 10px 20px;
+    background-color: #fd8c02;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 42%;
+    text-decoration: none;
 }
 
 .registro {
@@ -283,7 +342,7 @@ img {
     align-items: center;
     justify-content: center;
     max-width: 400px;
-    height: 25px;
+    height: 40px !important;
     font-size: 16px;
     color: white;
     font-weight: bold;
@@ -305,6 +364,7 @@ img {
     max-width: 400px;
     padding: 15px;
     margin: 20px auto;
+    height: 40px !important;
 }
 
 #fecha_creacion {
@@ -343,3 +403,36 @@ img {
     color: white;
     cursor: pointer;
 }
+
+#tabla_pacientes {
+    width: 100%;
+    min-width: 800px; 
+    border-collapse: collapse;
+}
+
+#tabla_pacientes th {
+    background-color: #1f618d;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+#tabla_pacientes td {
+    color: black;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+#tabla_pacientes tr:nth-child(even) {
+    background-color: #f2f2f2; 
+}
+
+@media (max-width: 768px) {
+    #tabla_pacientes {
+        font-size: 14px; 
+        min-width: 100%; 
+    }
+}
+
+
+

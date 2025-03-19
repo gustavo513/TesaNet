@@ -32,6 +32,7 @@ def escribir(query, params=None):
             with conn.cursor() as cursor:
                 cursor.execute(query, params)
                 conn.commit()
+                return cursor.rowcount
     except psycopg2.Error as e:
         print(f"Error en la escritura: {e}")
         return False

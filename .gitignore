@@ -1,6 +1,9 @@
 # Ignorar el entorno virtual
 .venv/
 
+# Ignorar el paquete node_modules
+node_modules
+
 # Ignorar archivos grandes
 #*.h5
 *.dll
